@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Car Account</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 16px;
+            color: #000000;
+        }
+
+        header {
+            background-color: #FFFFFF;
+            padding: 20px;
+        }
+
+        header h1 {
+            margin: 0;
+        }
+
+        nav a {
+            margin-right: 10px;
+            text-decoration: underline;
+            color: #0000FF;
+        }
+
+        #content {
+            padding: 20px;
+        }
+
+        footer {
+            background-color: #f0f0f0;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .logout-button {
+            margin-top: 10px; /* Add space above the button */
+            display: block;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Supergroup Car Rental</h1>
+        <button class="logout-button" onclick="logout()">Logout</button> 
+    </header>
+    <nav>
+        <ul>
+            <li><a href="manage-car-account.html">Manage Car Account</a></li>
+            <li><a href="check-availability-a.html">Check Availability</a></li>
+            <li><a href="rental-report-a.html">Reports</a></li>
+        </ul>
+    </nav>
+    <main>
+        <h2>Manage Car Account</h2>
+
+        <form id="customerForm">
+            <label for="carName">Car Number:</label>
+            <select id="individuals">
+                <option value="" id="first">Select a Car</option>
+            </select>
+        </form>
+
+        <div id="customer-info"></div>
+
+        <form id="editEntryForm" style="display: none;">
+            <label for="editKey">Car Number:</label>
+            <input type="text" id="editKey" disabled value="V" pattern="[V]{1}[0-9]{5}" title="V + 5 Numbers Only"> <!--Disabled changing number.-->
+            <br>
+            <label for="editValue1">Car Make:</label>
+            <input type="text" id="editValue1" pattern="[a-zA-Z\s]+" required title="Can only contain letters.">
+            <br>
+            <label for="editValue2">Car Model:</label>
+            <input type="text" id="editValue2" pattern="[a-zA-Z0-9\s]+" required title="Can only contain letters and numbers.">
+            <br>
+            <label for="editValue3">Car Status:</label>
+            <select id="Cars1" required>
+                <option value="Available">Available</option>
+                <option value="Unavailable">Unavailable</option>
+            </select>
+            <br>
+            <br>
+            <button type="submit">Save Changes</button>
+            <button type="button" id="clearBtn">Clear</button>
+            <button type="button" id="removeEntryButton">Delete Car</button> <!-- Remove button -->
+        </form>
+
+        <h2>Create Car Account</h2>
+        <form id="addEntryForm">
+            <label for="newKey">Car Number:</label>
+            <input type="text" id="newKey" value="V" pattern="[V]{1}[0-9]{5}" required title="V + 5 Numbers Only">
+            <br>
+            <br>
+            <label for="newValue1">Car Make</label>
+            <input type="text" id="newValue1" pattern="[a-zA-Z\s]+" required title="Can only contain letters.">
+            <br>
+            <br>
+            <label for="newValue2">Car Model</label>
+            <input type="text" id="newValue2" pattern="[a-zA-Z\s]+" required title="Can only contain letters.">
+            <br>
+            <br>
+            <label for="vehStatus">Car Status</label>
+            <select id="Cars" required>
+                <option value="Available">Available</option>
+                <option value="Unavailable">Unavailable</option>
+            </select>
+            <br>
+            <br>
+            <button type="submit" id="add">Add Car</button>
+            <button type="button" id="clear">Clear</button>
+        </form>
+
+    </main>
+    <footer>
+        <p>&copy; Supergroup Car Rental.</p>
+    </footer>
+    <script>
+        function logout() {
+                    window.location.href = "supergroup-home.html"; // Redirect to home page
+                }
+        // Initialize car inventory from local storage if available
+        let carInventory = JSON.parse(localStorage.getItem('carInventory')) || {
+            'V00001': { make: 'Toyota', model: 'Camry', status: 'Available' },
+            'V00002': { make: 'Honda', model: 'Accord', status: 'Available' },
+            'V00003': { make: 'Hyundai', model: 'Sonata', status: 'Available' },
+            'V00004': { make: 'Nissan', model: 'Altima', status: 'Available' },
+            'V00005': { make: 'Kia', model: 'K5', status: 'Available' },
+            'V00006': { make: 'Ford', model: 'F-150', status: 'Available' },
+            'V00007': { make: 'Chevrolet', model: 'Silverado 1500', status: 'Available' },
+            'V00008': { make: 'Ram', model: '1500', status: 'Available' },
+            'V00009': { make: 'Toyota', model: 'Tacoma', status: 'Available' },
+            'V00010': { make: 'GMC', model: 'Sierra 1500', status: 'Available' },
+            'V00011': { make: 'Toyota', model: 'RAV4', status: 'Available' },
+            'V00012': { make: 'Honda', model: 'CR-V', status: 'Available' },
+            'V00013': { make: 'Ford', model: 'Explorer', status: 'Available' },
+            'V00014': { make: 'Hyundai', model: 'Tucson', status: 'Available' },
+            'V00015': { make: 'Subaru', model: 'Outback', status: 'Available' },
+            'V00016': { make: 'Honda', model: 'Civic', status: 'Available' },
+            'V00017': { make: 'Toyota', model: 'Corolla', status: 'Available' },
+            'V00018': { make: 'Mazda', model: '3', status: 'Available' },
+            'V00019': { make: 'Hyundai', model: 'Elantra', status: 'Available' },
+            'V00020': { make: 'Kia', model: 'Forte', status: 'Available' }
+        };
+
+        // Populate the select dropdown with keys from the car inventory
+        const selectElement = document.getElementById("individuals");
+
+        function populateSelect() {
+            // Clear the current options (to avoid duplicates)
+            selectElement.innerHTML = '<option value="">Select a Car</option>';  // Reset to placeholder
+
+            // Loop through the car inventory keys and add them as options to the select element
+            for (const key in carInventory) {
+                if (carInventory.hasOwnProperty(key)) {
+                    const option = document.createElement("option");
+                    option.value = key;
+                    option.textContent = key;  // Display the car number
+                    selectElement.appendChild(option);
+                }
+            }
+        }
+
+        // Initial population of the select dropdown
+        populateSelect();
+
+        // Event listener to display the selected car's details
+        selectElement.addEventListener("change", function() {
+            const selectedKey = selectElement.value;  // Get the selected key from the dropdown
+            const displayDiv = document.getElementById("customer-info");
+            const editForm = document.getElementById("editEntryForm");
+
+            if (selectedKey && carInventory[selectedKey] !== undefined) {
+                document.getElementById("editKey").value = selectedKey;  // Set the key (disabled)
+                document.getElementById("editValue1").value = carInventory[selectedKey].make;  // Set the make
+                document.getElementById("editValue2").value = carInventory[selectedKey].model;  // Set the model
+                document.getElementById("Cars1").value = carInventory[selectedKey].status;  // Set the status
+                // Show the edit form
+                editForm.style.display = 'block';
+            } else {
+                displayDiv.textContent = "";  // Clear the display if no selection is made
+                editForm.style.display = 'none';  // Hide the edit form if no selection
+            }
+        });
+
+        const clear = document.getElementById("clear");
+        clear.addEventListener("click", function(event) {
+            event.preventDefault();
+            document.getElementById("newKey").value = "V";
+            document.getElementById("newValue1").value = "";
+            document.getElementById("newValue2").value = "";
+        });
+
+        const clearBtn = document.getElementById("clearBtn");
+        clearBtn.addEventListener("click", function(event) {
+            event.preventDefault();
+            editEntryForm.style.display = 'none';
+            const displayDiv = document.getElementById("customer-info");
+            displayDiv.textContent = "";  // Clear the selected item display
+            selectElement.innerHTML = '<option value="">Select a Car</option>';
+            populateSelect();
+        });
+
+        // Add the new entry when the user submits the form
+        const addEntryForm = document.getElementById("addEntryForm");
+
+        addEntryForm.addEventListener("submit", function(event) {
+            event.preventDefault();  // Prevent the default form submission behavior (page reload)
+
+            // Get the new key and values from the input fields
+            const newKey = document.getElementById("newKey").value.trim();
+            const newMake = document.getElementById("newValue1").value.trim();
+            const newModel = document.getElementById("newValue2").value.trim();
+            const newStatus = document.getElementById("Cars").value.trim();
+
+            // Validate that all fields are filled
+            if (newKey && newMake && newModel && newStatus) {
+                // If the key already exists, update the inventory
+                carInventory[newKey] = { make: newMake, model: newModel, status: newStatus };
+
+                // Store updated inventory in local storage
+                localStorage.setItem('carInventory', JSON.stringify(carInventory));
+
+                // Clear the input fields
+                document.getElementById("newKey").value = "V";
+                document.getElementById("newValue1").value = "";
+                document.getElementById("newValue2").value = "";
+
+                editEntryForm.style.display = 'none';
+                const displayDiv = document.getElementById("customer-info");
+                displayDiv.textContent = "";  // Clear the selected item display
+
+                // Re-populate the select dropdown with the updated inventory
+                populateSelect();
+
+                // Optionally show a success message
+                alert(`Added new Car: ${newKey}`);
+            } else {
+                alert("Please provide a valid Car number, make, model, and status.");
+            }
+        });
+
+        // Edit the selected entry when the user submits the edit form
+        const editEntryForm = document.getElementById("editEntryForm");
+
+        editEntryForm.addEventListener("submit", function(event) {
+            event.preventDefault();  // Prevent the default form submission behavior (page reload)
+
+            // Get the edited values from the input fields
+            const editedKey = document.getElementById("editKey").value.trim();
+            const editedMake = document.getElementById("editValue1").value.trim();
+            const editedModel = document.getElementById("editValue2").value.trim();
+            const editedStatus = document.getElementById("Cars1").value.trim();
+
+            // Validate the input
+            if (editedMake && editedModel && editedStatus) {
+                // Update the inventory with the new values
+                carInventory[editedKey] = { make: editedMake, model: editedModel, status: editedStatus };
+
+                // Store updated inventory in local storage
+                localStorage.setItem('carInventory', JSON.stringify(carInventory));
+
+                // Clear the input fields
+                document.getElementById("editValue1").value = "";
+                document.getElementById("editValue2").value = "";
+
+                // Re-populate the select dropdown with the updated inventory
+                populateSelect();
+
+                // Optionally show a success message
+                alert(`Updated Car Info: ${editedKey}`);
+            } else {
+                // If input is invalid, show an error message
+                alert("Please provide a valid Car make, model, and status.");
+            }
+
+            // Hide the edit form after saving
+            editEntryForm.style.display = 'none';
+            const displayDiv = document.getElementById("customer-info");
+            displayDiv.textContent = "";  // Clear the selected item display
+        });
+
+        // Remove the selected entry from the inventory when the Remove button is clicked
+        const removeButton = document.getElementById("removeEntryButton");
+
+        removeButton.addEventListener("click", function() {
+            const selectedKey = selectElement.value;
+
+            // Confirm the removal
+            if (selectedKey && confirm(`Are you sure you want to delete "${selectedKey}"?`)) {
+                // Remove the selected entry from the inventory
+                delete carInventory[selectedKey];
+
+                // Store updated inventory in local storage
+                localStorage.setItem('carInventory', JSON.stringify(carInventory));
+
+                // Re-populate the select dropdown with the updated inventory
+                populateSelect();
+
+                editEntryForm.style.display = 'none';
+                const displayDiv = document.getElementById("customer-info");
+                displayDiv.textContent = "";  // Clear the selected item display
+                selectElement.innerHTML = '<option value="">Select a Car</option>';
+                populateSelect();
+            }
+        });
+    </script>
+</body>
+</html>

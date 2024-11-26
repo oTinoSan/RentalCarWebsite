@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administrator Login</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 16px;
+            color: #000000;
+        }
+
+        header {
+            background-color: #FFFFFF;
+            padding: 20px;
+        }
+
+        header h1 {
+            margin: 0;
+        }
+
+        nav a {
+            margin-right: 10px;
+            text-decoration: underline;
+            color: #0000FF;
+        }
+
+        #content {
+            padding: 20px;
+        }
+
+        footer {
+            background-color: #f0f0f0;
+            padding: 20px;
+            text-align: center;
+        }
+
+        #loginResult {
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        #additionalLinks {
+            margin-top: 20px;
+            display: none; /* Hide the links initially */
+        }
+
+        #additionalLinks ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        #additionalLinks li {
+            margin-bottom: 10px;
+        }
+
+        #logoutSection {
+            display: none; /* Hide the logout section initially */
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Supergroup Car Rental</h1>
+    </header>
+    <nav>
+        <ul>
+            <li><a href="supergroup-home.html">Home</a></li>
+        </ul>
+    </nav>
+    <main>
+        <h2>Administrator Login</h2>
+        <form id="loginForm" onsubmit="login(event)">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+            <button type="submit">Login</button>
+        </form>
+        <br>
+        <button id="forgotButton" onclick="forgotCredentials()">Forgot Username/Password</button>
+        
+        <div id="loginResult"></div>
+        
+        <div id="additionalLinks">
+            <ul>
+                <li><a href="manage-car-account.html">Manage Car Account</a></li>
+                <li><a href="check-availability-a.html">Check Availability</a></li>
+                <li><a href="rental-report-a.html">Reports</a></li>
+            </ul>
+        </div>
+
+        <div id="logoutSection">
+            <button onclick="logout()">Logout</button>
+        </div>
+    </main>
+    <footer>
+        <p>&copy; Supergroup Car Rental.</p>
+    </footer>
+    <script>
+        // Mock data for demonstration purposes
+        const adminAccounts = [
+            { username: "admin", password: "admin123" }
+        ];
+
+        // Function to validate login
+        function login(event) {
+            event.preventDefault(); // Prevent form from reloading the page
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+
+            const account = adminAccounts.find(acc => acc.username === username);
+
+            const resultDiv = document.getElementById("loginResult");
+            if (!account) {
+                resultDiv.textContent = "Invalid username. Please try again.";
+                resultDiv.style.color = "red";
+            } else if (account.password !== password) {
+                resultDiv.textContent = "Wrong password. Please try again.";
+                resultDiv.style.color = "red";
+            } else {
+                resultDiv.textContent = "Login successful. Welcome!";
+                resultDiv.style.color = "green";
+                document.getElementById("loginForm").style.display = "none";
+                document.getElementById("forgotButton").style.display = "none";
+                document.getElementById("additionalLinks").style.display = "block";
+                document.getElementById("logoutSection").style.display = "block";
+            }
+        }
+
+        // Function to logout
+        function logout() {
+            document.getElementById("loginForm").style.display = "block";
+            document.getElementById("forgotButton").style.display = "block";
+            document.getElementById("additionalLinks").style.display = "none";
+            document.getElementById("logoutSection").style.display = "none";
+            document.getElementById("loginResult").textContent = "You have been logged out.";
+            document.getElementById("loginResult").style.color = "blue";
+        }
+
+        // "Forgot Username/Password" placeholder
+        function forgotCredentials() {
+            alert("Please contact the administrator for username/password assistance.");
+        }
+    </script>
+</body>
+</html>

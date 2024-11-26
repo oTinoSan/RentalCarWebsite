@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account Information</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 16px;
+            color: #000000;
+        }
+
+        header {
+            background-color: #FFFFFF;
+            padding: 20px;
+        }
+
+        header h1 {
+            margin: 0;
+        }
+
+        nav a {
+            margin-right: 10px;
+            text-decoration: underline;
+            color: #0000FF;
+        }
+
+        #content {
+            padding: 20px;
+        }
+
+        footer {
+            background-color: #f0f0f0;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .logout-button {
+            margin-top: 10px; /* Add space above the button */
+            display: block;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Supergroup Car Rental</h1>
+        <button class="logout-button" onclick="logout()">Logout</button> 
+    </header>
+    <nav>
+        <ul>
+            <li><a href="rent-car-c.html">Rent Car</a></li>
+            <li><a href="check-availability-c.html">Check Availability</a></li>
+            <li><a href="account-info-c.html">Account Info</a></li>
+        </ul>
+    </nav>
+    <main>
+        <h2>Account Information</h2>
+        <form id="accountForm">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required>
+
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+            <br><br>
+
+            <label for="firstName">First Name:</label>
+            <input type="text" id="firstName" name="firstName" required>
+
+            <label for="lastName">Last Name:</label>
+            <input type="text" id="lastName" name="lastName" required>
+            <br><br>
+
+            <label for="contactNumber">Contact Number:</label>
+            <input type="tel" id="contactNumber" name="contactNumber" required>
+
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
+            &nbsp;&nbsp;
+            <button type="submit">Update Information</button>
+        </form>
+
+        <div id="result"></div>
+    </main>
+    <footer>
+        <p>&copy; Supergroup Car Rental.</p>
+    </footer>
+    <script>
+        function logout() {
+            window.location.href = "supergroup-home.html"; // Redirect to home page
+        }
+
+        const accountForm = document.getElementById('accountForm');
+        const resultDiv = document.getElementById('result');
+
+        // Mock data for customer account information
+        let customerAccount = {
+            username: "user",
+            password: "user123",
+            firstName: "First",
+            lastName: "Customer",
+            contactNumber: "123-456-7890",
+            email: "first.customer@example.com"
+        };
+
+        // Populate the form with existing account information
+        document.getElementById('username').value = customerAccount.username;
+        document.getElementById('password').value = customerAccount.password;
+        document.getElementById('firstName').value = customerAccount.firstName;
+        document.getElementById('lastName').value = customerAccount.lastName;
+        document.getElementById('contactNumber').value = customerAccount.contactNumber;
+        document.getElementById('email').value = customerAccount.email;
+
+        accountForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+
+            // Update the customer account information
+            customerAccount.username = document.getElementById('username').value;
+            customerAccount.password = document.getElementById('password').value;
+            customerAccount.firstName = document.getElementById('firstName').value;
+            customerAccount.lastName = document.getElementById('lastName').value;
+            customerAccount.contactNumber = document.getElementById('contactNumber').value;
+            customerAccount.email = document.getElementById('email').value;
+
+            // Display a success message
+            resultDiv.innerHTML = `<br>Account information updated successfully.`;
+        });
+    </script>
+</body>
+</html>

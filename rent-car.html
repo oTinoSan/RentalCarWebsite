@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rent a Car</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 16px;
+            color: #000000;
+        }
+
+        header {
+            background-color: #FFFFFF;
+            padding: 20px;
+        }
+
+        header h1 {
+            margin: 0;
+        }
+
+        nav a {
+            margin-right: 10px;
+            text-decoration: underline;
+            color: #0000FF;
+        }
+
+        #content {
+            padding: 20px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-gap: 20px;
+        }
+
+        .grid img {
+            width: 100%;
+            height: auto;
+        }
+
+        footer {
+            background-color: #f0f0f0;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .unpaid {
+            color: red;
+            font-weight: bold;
+            text-align: left;
+            margin-top: 20px;
+            padding-left: 20px;
+        }
+
+        .logout-button {
+            margin-top: 10px; /* Add space above the button */
+            display: block;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Supergroup Car Rental</h1>
+        <button class="logout-button" onclick="logout()">Logout</button> 
+    </header>
+    <nav>
+        <ul>
+            <li><a href="rent-car.html">Rent Car</a></li>
+            <li><a href="return-car.html">Return Car</a></li>
+            <li><a href="check-availability-s.html">Check Availability</a></li>
+            <li><a href="manage-customer.html">Manage Customer</a></li>
+            <li><a href="rental-report-s.html">Rental Reports</a></li>
+        </ul>
+    </nav>
+    <main>
+        <h2>Rent a Car</h2>
+        <form id="rentForm">
+            <label for="vehicleType">Vehicle Type:</label>
+            <select id="vehicleType" name="vehicleType" required>
+                <option value="Sedan">Sedan</option>
+                <option value="Truck">Truck</option>
+                <option value="SUV">SUV</option>
+                <option value="Compact">Compact</option>
+            </select>
+
+            <label for="fuelPlan">Fuel Plan:</label>
+            <select id="fuelPlan" name="fuelPlan" required>
+                <option value="Unlimited">Unlimited</option>
+                <option value="Pay Per Gallon">Pay Per Gallon</option>
+            </select>
+
+            <label for="rentalDate">Rental Date:</label>
+            <input type="date" id="rentalDate" name="rentalDate" required>
+
+            <label for="returnDate">Return Date:</label>
+            <input type="date" id="returnDate" name="returnDate" required>
+
+            <button type="submit">Rent</button>  
+        </form>
+
+        <div id="result"></div>
+        <div id="billDetails"></div>
+    </main>
+    <footer>
+        <p>&copy; Supergroup Car Rental.</p>
+    </footer>
+    <script src="initialize-car-inventory.js"></script> <!-- Include the initialization script here -->
+    <script>
+        function logout() {
+                    window.location.href = "supergroup-home.html"; // Redirect to home page
+                }
+        const rentForm = document.getElementById('rentForm');
+        const resultDiv = document.getElementById('result');
+        const billDetailsDiv = document.getElementById('billDetails');
+        const vehicleTypeSelect = document.getElementById('vehicleType');
+
+        const makeModelOptions = {
+            Sedan: ['Toyota Camry', 'Honda Accord', 'Hyundai Sonata', 'Nissan Altima', 'Kia K5'],
+            Truck: ['Ford F-150', 'Chevrolet Silverado 1500', 'Ram 1500', 'Toyota Tacoma', 'GMC Sierra 1500'],
+            SUV: ['Toyota RAV4', 'Honda CR-V', 'Ford Explorer', 'Hyundai Tucson', 'Subaru Outback'],
+            Compact: ['Honda Civic', 'Toyota Corolla', 'Mazda3', 'Hyundai Elantra', 'Kia Forte']
+        };
+
+        // Initialize car inventory from local storage if available
+        const carInventory = JSON.parse(localStorage.getItem('carInventory')) || {};
+
+        rentForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+
+            const vehicleType = document.getElementById('vehicleType').value;
+            const fuelPlan = document.getElementById('fuelPlan').value;
+            const rentalDate = document.getElementById('rentalDate').value;
+            const returnDate = document.getElementById('returnDate').value;
+
+            // Select a make and model with available inventory
+            const availableModels = Object.keys(carInventory).filter(key => {
+                const car = carInventory[key];
+                return makeModelOptions[vehicleType].includes(`${car.make} ${car.model}`) && car.status === 'Available';
+            });
+
+            if (availableModels.length === 0) {
+                resultDiv.innerHTML = `<br>Sorry, no ${vehicleType}s are available at the moment.`;
+                return;
+            }
+
+            const selectedCarKey = availableModels[0];
+            carInventory[selectedCarKey].status = 'Unavailable';
+
+            // Generate a unique reservation number
+            const reservationNumber = `RES-${Date.now()}`;
+
+            // Create reservation object
+            const reservation = {
+                reservationNumber,
+                vehicleType,
+                makeModel: `${carInventory[selectedCarKey].make} ${carInventory[selectedCarKey].model}`,
+                fuelPlan,
+                rentalDate,
+                returnDate
+            };
+
+            // Store reservation in local storage
+            let reservations = JSON.parse(localStorage.getItem('reservations')) || [];
+            reservations.push(reservation);
+            localStorage.setItem('reservations', JSON.stringify(reservations));
+
+            // Store updated inventory in local storage
+            localStorage.setItem('carInventory', JSON.stringify(carInventory));
+
+            resultDiv.innerHTML = `<br>Reservation confirmed! A bill has been sent to customer's email.`;
+
+            // Generate the bill based on the reservation details
+            billDetailsDiv.innerHTML = `
+                <p>Reservation Number: ${reservation.reservationNumber}</p>
+                <p>Vehicle Type: ${reservation.vehicleType}</p>
+                <p>Make and Model: ${reservation.makeModel}</p>
+                <p>Fuel Plan: ${reservation.fuelPlan}</p>
+                <p>Rental Date: ${reservation.rentalDate}</p>
+                <p>Return Date: ${reservation.returnDate}</p>
+                <p>Total Cost: $${calculateTotalCost(reservation)}</p>
+                <p class="unpaid">UNPAID</p>
+            `;
+        });
+
+        function calculateTotalCost(reservation) {
+            // Calculate the total cost based on the reservation details
+            // This is a placeholder calculation
+            const days = (new Date(reservation.returnDate) - new Date(reservation.rentalDate)) / (1000 * 60 * 60 * 24);
+            const costPerDay = reservation.vehicleType === 'SUV' ? 60 : 50;
+            return days * costPerDay;
+        }
+    </script>
+</body>
+</html>

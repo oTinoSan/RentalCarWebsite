@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Check Car Availability</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 16px;
+            color: #000000;
+        }
+
+        header {
+            background-color: #FFFFFF;
+            padding: 20px;
+        }
+
+        header h1 {
+            margin: 0;
+        }
+
+        nav a {
+            margin-right: 10px;
+            text-decoration: underline; /* Add underline */
+            color: #0000FF; /* Change color to blue */
+        }
+
+        #content {
+            padding: 20px;
+        }
+
+        footer {
+            background-color: #f0f0f0;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .logout-button {
+            margin-top: 10px; /* Add space above the button */
+            display: block;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Supergroup Car Rental</h1>
+        <button class="logout-button" onclick="logout()">Logout</button> 
+    </header>
+    <nav>
+        <ul>
+            <li><a href="manage-car-account.html">Manage Car Account</a></li>
+            <li><a href="check-availability-a.html">Check Availability</a></li>
+            <li><a href="rental-report-a.html">Reports</a></li>
+        </ul>
+    </nav>
+    <main>
+        <h2>Check Car Availability</h2>
+        <form id="availabilityForm">
+            <label for="make">Make:</label>
+            <input type="text" id="make" name="make" required>
+
+            <label for="model">Model:</label>
+            <input type="text" id="model" name="model" required>
+
+            <label for="startDate">Start Date:</label>
+            <input type="date" id="startDate" name="startDate" required>
+
+            <label for="endDate">End Date:</label>
+            <input type="date" id="endDate" name="endDate" required>
+
+            <button type="submit">Check Availability</button>
+        </form>
+
+        <div id="result"></div>
+    </main>
+    <footer>
+        <p>&copy; Supergroup Car Rental.</p>
+    </footer>
+    <script>
+         function logout() {
+            window.location.href = "supergroup-home.html"; // Redirect to home page
+        }
+
+        const availabilityForm = document.getElementById('availabilityForm');
+        const resultDiv = document.getElementById('result');
+
+        availabilityForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+
+            // Simulate checking availability
+            const make = document.getElementById('make').value;
+            const model = document.getElementById('model').value;
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+
+            // Simulated response
+            const isAvailable = Math.random() > 0.5; // Randomly simulate availability
+
+            if (isAvailable) {
+                resultDiv.innerHTML = `<br><br>The ${make} ${model} is available from ${startDate} to ${endDate}.`;
+            } else {
+                resultDiv.innerHTML = `<br><br>Sorry, the ${make} ${model} is not available from ${startDate} to ${endDate}.`;
+            }
+        });
+    </script>
+</body>
+</html>

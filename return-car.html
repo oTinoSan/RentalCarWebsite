@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Return Car</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 16px;
+            color: #000000;
+        }
+
+        header {
+            background-color: #FFFFFF;
+            padding: 20px;
+        }
+
+        header h1 {
+            margin: 0;
+        }
+
+        nav a {
+            margin-right: 10px;
+            text-decoration: underline;
+            color: #0000FF;
+        }
+
+        #content {
+            padding: 20px;
+        }
+
+        footer {
+            background-color: #f0f0f0;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .paid {
+            color: rgb(7, 140, 7);
+            font-weight: bold;
+            text-align: left;
+            margin-top: 20px;
+            padding-left: 20px;
+        }
+
+        .logout-button {
+            margin-top: 10px; /* Add space above the button */
+            display: block;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Supergroup Car Rental</h1>
+        <button class="logout-button" onclick="logout()">Logout</button> 
+    </header>
+    <nav>
+        <ul>
+            <li><a href="rent-car.html">Rent Car</a></li>
+            <li><a href="return-car.html">Return Car</a></li>
+            <li><a href="check-availability-s.html">Check Availability</a></li>
+            <li><a href="manage-customer.html">Manage Customer</a></li>
+            <li><a href="rental-report-s.html">Rental Reports</a></li>
+        </ul>
+    </nav>
+    <main>
+        <h2>Return a Car</h2>
+        <form id="returnForm">
+            <label for="reservationNumber">Reservation Number:</label>
+            <input type="text" id="reservationNumber" name="reservationNumber" required>
+
+            <label for="returnDate">Return Date:</label>
+            <input type="date" id="returnDate" name="returnDate" required>
+
+            <button type="submit">Return Car</button>
+        </form>
+
+        <div id="result"></div>
+        <div id="billDetails"></div>
+    </main>
+    <footer>
+        <p>&copy; Supergroup Car Rental.</p>
+    </footer>
+    <script src="car-inventory.js"></script> <!-- Include the initialization script here -->
+    <script>
+        function logout() {
+                    window.location.href = "supergroup-home.html"; // Redirect to home page
+                }
+        const returnForm = document.getElementById('returnForm');
+        const resultDiv = document.getElementById('result');
+        const billDetailsDiv = document.getElementById('billDetails');
+
+        returnForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+
+            const reservationNumber = document.getElementById('reservationNumber').value;
+            const returnDate = document.getElementById('returnDate').value;
+
+            // Retrieve reservations from local storage
+            let reservations = JSON.parse(localStorage.getItem('reservations')) || [];
+            const reservation = reservations.find(r => r.reservationNumber === reservationNumber);
+
+            if (reservation) {
+                // Update the return date in the reservation
+                reservation.returnDate = returnDate;
+
+                // Retrieve car inventory from local storage
+                const carInventory = JSON.parse(localStorage.getItem('carInventory')) || {};
+
+                // Find the car in the inventory and mark it as available
+                const carKey = Object.keys(carInventory).find(key => {
+                    const car = carInventory[key];
+                    return `${car.make} ${car.model}` === reservation.makeModel && car.status === 'Unavailable';
+                });
+
+                if (carKey) {
+                    carInventory[carKey].status = 'Available';
+                    localStorage.setItem('carInventory', JSON.stringify(carInventory));
+                }
+
+                // Simulate successful return and bill generation
+                resultDiv.innerHTML = `<br>Return Successful! An invoice has been sent to customer.`;
+
+                // Generate the bill based on the reservation number
+                billDetailsDiv.innerHTML = `
+                    <p>Reservation Number: ${reservation.reservationNumber}</p>
+                    <p>Vehicle Type: ${reservation.vehicleType}</p>
+                    <p>Make and Model: ${reservation.makeModel}</p>
+                    <p>Fuel Plan: ${reservation.fuelPlan}</p>
+                    <p>Rental Date: ${reservation.rentalDate}</p>
+                    <p>Return Date: ${reservation.returnDate}</p>
+                    <p>Total Cost: $${calculateTotalCost(reservation)}</p>
+                    <p class="paid">PAID</p>
+                `;
+
+                // Remove the reservation from local storage
+                reservations = reservations.filter(r => r.reservationNumber !== reservationNumber);
+                localStorage.setItem('reservations', JSON.stringify(reservations));
+            } else {
+                resultDiv.textContent = 'Invalid reservation number.';
+            }
+        });
+
+        function calculateTotalCost(reservation) {
+            // Calculate the total cost based on the reservation details
+            // This is a placeholder calculation
+            const days = (new Date(reservation.returnDate) - new Date(reservation.rentalDate)) / (1000 * 60 * 60 * 24);
+            const costPerDay = reservation.vehicleType === 'SUV' ? 60 : 50;
+            return days * costPerDay;
+        }
+    </script>
+</body>
+</html>

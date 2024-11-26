@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reports</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 16px;
+            color: #000000;
+        }
+
+        header {
+            background-color: #FFFFFF;
+            padding: 20px;
+        }
+
+        header h1 {
+            margin: 0;
+        }
+
+        nav a {
+            margin-right: 10px;
+            text-decoration: underline;
+            color: #0000FF;
+        }
+
+        #content {
+            padding: 20px;
+        }
+
+        footer {
+            background-color: #f0f0f0;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .report-section {
+            margin-bottom: 40px;
+        }
+
+        .report-section h2 {
+            margin-bottom: 10px;
+        }
+
+        .report-section p {
+            margin: 5px 0;
+        }
+
+        .logout-button {
+            margin-top: 10px; /* Add space above the button */
+            display: block;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Supergroup Car Rental</h1>
+        <button class="logout-button" onclick="logout()">Logout</button> 
+    </header>
+    <nav>
+        <ul>
+            <li><a href="manage-car-account.html">Manage Car Account</a></li>
+            <li><a href="check-availability-a.html">Check Availability</a></li>
+            <li><a href="rental-report-a.html">Reports</a></li>
+        </ul>
+    </nav>
+    <main>
+        <div id="content">
+            <div class="report-section" id="rentedCarsReport">
+                <h2>Report of All Cars Rented</h2>
+                <div id="rentedCarsList"></div>
+            </div>
+            <div class="report-section" id="inHouseCarsReport">
+                <h2>Report of All Cars In-House</h2>
+                <div id="inHouseCarsList"></div>
+            </div>
+            <div class="report-section" id="revenueReport">
+                <h2>Report of the Revenue</h2>
+                <div id="revenueAmount"></div>
+            </div>
+        </div>
+    </main>
+    <footer>
+        <p>&copy; Supergroup Car Rental.</p>
+    </footer>
+    <script src="car-inventory.js"></script> 
+    <script>
+        function logout() {
+                    window.location.href = "supergroup-home.html"; // Redirect to home page
+                }
+        document.addEventListener('DOMContentLoaded', () => {
+            const rentedCarsList = document.getElementById('rentedCarsList');
+            const inHouseCarsList = document.getElementById('inHouseCarsList');
+            const revenueAmount = document.getElementById('revenueAmount');
+
+            // Retrieve reservations from local storage
+            let reservations = JSON.parse(localStorage.getItem('reservations')) || [];
+            let totalRevenue = 0;
+
+            // Generate report of all cars rented
+            if (reservations.length > 0) {
+                reservations.forEach(reservation => {
+                    const days = (new Date(reservation.returnDate) - new Date(reservation.rentalDate)) / (1000 * 60 * 60 * 24);
+                    const costPerDay = reservation.vehicleType === 'SUV' ? 60 : 50;
+                    const totalCost = days * costPerDay;
+                    totalRevenue += totalCost;
+
+                    rentedCarsList.innerHTML += `
+                        <p>Reservation Number: ${reservation.reservationNumber}</p>
+                        <p>Vehicle Type: ${reservation.vehicleType}</p>
+                        <p>Make and Model: ${reservation.makeModel}</p>
+                        <p>Rental Date: ${reservation.rentalDate}</p>
+                        <p>Return Date: ${reservation.returnDate}</p>
+                        <p>Total Cost: $${totalCost.toFixed(2)}</p>
+                        <hr>
+                    `;
+                });
+            } else {
+                rentedCarsList.innerHTML = '<p>No cars rented currently.</p>';
+            }
+
+            // Retrieve car inventory from local storage
+            const carInventory = JSON.parse(localStorage.getItem('carInventory')) || {};
+            let availableCarsCount = 0;
+
+            // Generate report of all cars in-house
+            for (const carNumber in carInventory) {
+                if (carInventory.hasOwnProperty(carNumber)) {
+                    const car = carInventory[carNumber];
+                    if (car.status === 'Available') {
+                        availableCarsCount++;
+                    }
+                    inHouseCarsList.innerHTML += `<p>${carNumber}: ${car.make} ${car.model} - ${car.status}</p>`;
+                }
+            }
+
+            // Display the number of available cars
+            inHouseCarsList.innerHTML += `<p>Total Available Cars: ${availableCarsCount}</p>`;
+
+            // Generate report of the revenue
+            revenueAmount.innerHTML = `<p>Total Revenue: $${totalRevenue.toFixed(2)}</p>`;
+        });
+    </script>
+</body>
+</html>
